@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en" class="light-style layout-navbar-fixed layout-menu-fixed" dir="ltr" data-theme="theme-default" data-assets-path="assets/" data-template="vertical-menu-template">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+
+    <title>Account Recovery | GeekWEB</title>
+
+    <meta name="description" content="" />
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="assets/img/favicon/favicon.ico" />
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit&family=Rajdhani:wght@600&family=Rubik:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet">
+    <!-- Icons -->
+    <link rel="stylesheet" href="assets/vendor/fonts/fontawesome.css" />
+    <link rel="stylesheet" href="assets/vendor/fonts/tabler-icons.css" />
+    <link rel="stylesheet" href="assets/vendor/fonts/flag-icons.css" />
+
+    <!-- Core CSS -->
+    <link rel="stylesheet" href="assets/vendor/css/rtl/core.css" class="template-customizer-core-css" />
+    <link rel="stylesheet" href="assets/vendor/css/rtl/theme-default.css" class="template-customizer-theme-css" />
+    <link rel="stylesheet" href="assets/css/demo.css" />
+
+    <!-- Vendors CSS -->
+   
+    <link
+        rel="stylesheet"
+        href="https://site-assets.fontawesome.com/releases/v6.5.1/css/all.css"
+      >
+
+      <link
+        rel="stylesheet"
+        href="https://site-assets.fontawesome.com/releases/v6.5.1/css/sharp-thin.css"
+      >
+
+      <link
+        rel="stylesheet"
+        href="https://site-assets.fontawesome.com/releases/v6.5.1/css/sharp-solid.css"
+      >
+
+      <link
+        rel="stylesheet"
+        href="https://site-assets.fontawesome.com/releases/v6.5.1/css/sharp-regular.css"
+      >
+
+      <link
+        rel="stylesheet"
+        href="https://site-assets.fontawesome.com/releases/v6.5.1/css/sharp-light.css"
+      >
+
+    <link rel="stylesheet" href="assets/vendor/libs/spinkit/spinkit.css" />
+
+    <!-- Page CSS -->
+    <link rel="stylesheet" href="assets/vendor/css/pages/cards-advance.css" />
+    <!-- Helpers -->
+    <script src="assets/vendor/js/helpers.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="assets/vendor/js/customizer.js"></script>
+    <script src="assets/js/config.js"></script>
+  </head>
+
+  <body style="font-family: Outfit, sans-serif;">
+   
+    
+<script>
+$(document).ready(function() {
+$('.btn-recover').click(function(e){
+	e.preventDefault();
+	const divElement = document.querySelector('.modal-body-login');	
+	var info = $('#info').val();
+    if (info == '') {
+    divElement.innerHTML = '<i class="fas fa-circle-exclamation text-danger" style="margin-left:auto; margin-right:auto; font-size: 38px; text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);"></i><div style="font-size: 16px; padding-top: 10px"><span class="text-danger">Please Enter Your Email Address Or Username</span></div>';
+    
+    return false;
+    }
+    
+	   $.ajax ({
+         type: "POST",
+	     url: "auth.g/functions",
+         data: "info="+info+"&action=reset_password",
+	     beforeSend: function() {
+         divElement.innerHTML = '<div class="spinner-border text-success float-centet" role="status" style="height: 38px; width: 38px; font-size: 7px"></div><div style="font-size: 16px; padding-top: 10px"><span class="text-success">Sending Backup Link</span></div>';
+
+	     },	
+	     success: function(response) {
+         var auth = JSON.parse(response);
+         if (auth.statusCode == 401) {
+           divElement.innerHTML = auth.res;
+         } else if (auth.statusCode == 403) {
+           divElement.innerHTML = auth.res;
+         } else if (auth.statusCode == 412) {
+           function hideLoginModal() {
+           $('#modal2').modal('hide');
+           }   
+           function openVerModal() {
+           $('#validation_modal').modal('show');
+           }    
+           setTimeout(hideLoginModal, 500);
+           setTimeout(openVerModal, 600);
+         } else if (auth.statusCode == 200) {
+           function redirect() {
+           window.location.href = "signin";
+           }
+          
+           divElement.innerHTML = auth.res;
+           setTimeout(redirect, 2000);  
+        }
+		},
+		error: function(err) {
+		 
+		}            
+	});
+  });     
+});
+
+</script>
+<style>
+.progress-bar {
+  height: 2px;
+  background-color: transparent;
+  border-top-left-radius: 50px;
+  border-top-right-radius: 50px;
+  width: 100%;
+  border: 0.0px solid #161618;
+  overflow: hidden;
+}
+.progress-bar-value-success {
+  height: 100%;
+  width: 100%;
+  background: linear-gradient(to right, #40826D, #98FB98);
+}
+.progress-bar-value-warning {
+  height: 100%;
+  width: 100%;
+  background: linear-gradient(to right, #ff9f43, #FFDF00);
+}
+.progress-bar-value-danger {
+  height: 100%;
+  width: 100%;
+  background: linear-gradient(to right, #D21F3C, #ea5455);
+}
+.progress-bar-value {
+  height: 100%;
+  width: 100%;
+  background: linear-gradient(to right, #40826D, #98FB98);
+  animation: indeterminateAnimation 1s infinite linear;
+  transform-origin: 0% 50%;
+}
+
+@keyframes indeterminateAnimation {
+  0% {
+    transform:  translateX(0) scaleX(0);
+  }
+  40% {
+    transform:  translateX(0) scaleX(0.4);
+  }
+  100% {
+    transform:  translateX(100%) scaleX(0.5);
+  }
+}
+</style>
+      
+       
+         <!-- Layout wrapper -->
+    <div class="layout-wrapper layout-content-navbar">
+      <div class="layout-container">
+        <!-- Menu -->
+        
+        <aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme" style="">
+          <div class="app-brand demo p-3 m-0 mb-2" style="background: #202225;">
+            <a href="index.html" class="app-brand-link" style="margin-bottom: px;">
+            <img class="text-center" src="geekmods.png" width="30">
+              </span>
+              <b class="text-center text-muted" style="font-size: 20px; margin-left: 7px"><font class="text-success"> Geek</font>Web</b>
+            </a>
+
+            <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto">
+              <i class="ti menu-toggle-icon d-none d-xl-block ti-sm align-middle"></i>
+              <i class="ti ti-x d-block d-xl-none ti-sm align-middle"></i>
+            </a>
+          </div>
+
+          <div class="menu-inner-shadow"></div>
+
+          <ul class="menu-inner py-1">
+             </li>
+ <li class="menu-item" >
+              <a
+                href="dashboard"
+                class="menu-link"
+              >
+                <i class="menu-icon tf-icons ti ti-smart-home"></i>
+                <div data-i18n="Dashboard">Dashboard</div>
+              </a>
+            </li>
+         
+            <!-- Dashboards -->
+            
+            
+              </ul>
+          
+          
+          
+          
+          
+          
+          
+                      
+          
+          
+          
+          </ul>
+        </aside>
+        <!-- / Menu -->
+
+        <!-- Layout container -->
+        <div class="layout-page">
+          <!-- Navbar -->
+                    <nav
+            class="layout-navbar container-xxl navbar navbar-expand-xl navbar-detached align-items-center justify-content-center bg-navbar-theme text-center"
+            id="layout-navbar"
+          >
+<div class="text-center" style="height: auto; padding: 13px; border-top-left-radius: 5px; border-top-right-radius: 5px; font-size: 20px">   
+       <img src="geekmods.png" style="margin-bottom: 4.5px;" height="21" width="21">                      
+<b><font class="text-success">Geek<font class="text-muted">Web</font></font></b>
+           </div>    
+</nav>
+          <!-- / Navbar -->
+
+          <!-- Content wrapper -->
+          <div class="content-wrapper">
+            <!-- Content -->
+
+            <div class="container-xxl flex-grow-1 container-p-y">
+              <div class="row">
+                <!-- Content Removed for Brevity -->
+                  <div class="col-lg-3 col-sm-6 mb-3" style="margin-top: ;">
+                
+                
+                
+                
+                
+                
+                
+
+
+          <div class="card">
+            <div class="card-body p-0">
+       
+                                                      
+
+                                
+                                <form class="auth-login-form" style="margin-left: 20px; margin-right: 20px; padding: 7px; margin-bottom: 20px; margin-top: 15px;" action="" method="POST">
+              
+                <div class="mb-0">
+                
+<div class="form-floating mt-2 mb-3" style="">
+          <input type="text" class="form-control" id="info" placeholder="" value="" aria-describedby="floatingInputHelp" />
+          <label for="info">EMAIL OR USERNAME</label>
+</div>
+
+              <div style="margin-top: 10; margin-bottom: 18px"><a href="signin" class="text-success" style=""></div>
+                                                <small style="font-size: 15px;">Remember Password?</small>
+                                            </a>                         
+                  <div class="btn btn-success btn-recover d-grid w-100" style="height: 40px; margin-top: 18px" data-bs-toggle="modal"
+                          data-bs-target="#modal2">Recover</div>
+               </form>
+    </div><hr style="padding: 0px; margin: 0px;">
+                                                     <div class="text-center p-3">Don't Have An Account? <a href="signup" class="text-success"><b>Sign Up</b></a></div>
+                  
+                  </div></div>
+   
+
+
+
+                
+              </div>
+            </div>
+            <!-- / Content -->
+
+
+            <div class="content-backdrop fade"></div>
+          </div>
+          <!-- Content wrapper -->
+        </div>
+        <!-- / Layout page -->
+      </div>
+
+      <!-- Overlay -->
+      <div class="layout-overlay layout-menu-toggle"></div>
+
+      <!-- Drag Target Area To SlideIn Menu On Small Screens -->
+      <div class="drag-target"></div>
+    </div>
+    <!-- / Layout wrapper -->
+
+
+           
+           
+           
+ <!-- Modal Start -->
+ <div class="modal fade" id="modal2" tabindex="-1" aria-labelledby="modalTitle" aria-hidden="true" data-backdrop="static">
+ <div class="modal-dialog modal-dialog-centered">
+ <div class="modal-content p-0" style="box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); ">
+ <div class="modal-header p-0" style="border-top-left-radius: 3px; border-top-right-radius: 3px; border-bottom-left-radius: 0px; border-bottom-right-radius: 0px;">
+
+  </div>  
+ <div id="modalBody" class="modal-body modal-body-login p-4 text-center" style="border-top-left-radius: 0px; border-top-right-radius: 0px; border-bottom-left-radius: 3px; border-bottom-right-radius: 3px; border-top: 0px solid #ea5455; ">
+ 
+ </div>
+ 
+ </div>
+ </div>
+ </div>
+ </div>
+<!-- Modal End-->
+
+
+
+
+
+
+           
+           
+           
+           
+           
+
+          </tbody>
+        </table>
+      </div>
+    
+
+            </div>
+          
+        </div>
+      
+      
+    <!-- Core JS -->
+    <!-- build:js assets/vendor/js/core.js -->
+    <script src="assets/vendor/libs/jquery/jquery.js"></script>
+    <script src="assets/vendor/libs/popper/popper.js"></script>
+    <script src="assets/vendor/js/bootstrap.js"></script>
+    <script src="assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js"></script>
+    <script src="assets/vendor/libs/node-waves/node-waves.js"></script>
+
+    <script src="assets/vendor/libs/hammer/hammer.js"></script>
+    <script src="assets/vendor/libs/i18n/i18n.js"></script>
+    <script src="assets/vendor/libs/typeahead-js/typeahead.js"></script>
+
+    <script src="assets/vendor/js/menu.js"></script>
+    <!-- endbuild -->
+
+    <!-- Vendors JS -->
+    <script src="assets/vendor/libs/apex-charts/apexcharts.js"></script>
+    <script src="assets/vendor/libs/swiper/swiper.js"></script>
+    <script src="assets/vendor/libs/datatables-bs5/datatables-bootstrap5.js"></script>
+
+    <!-- Main JS -->
+    <script src="assets/js/main.js"></script>
+    <script>
+      function tutorial(link) {
+        document.location.href = link;
+      }
+      function demo(link) {
+        document.location.href = link;
+      }
+      function download(link) {
+        document.location.href = link;
+      }
+    </script>
+    <!-- Page JS -->
+    <script src="assets/js/cards-actions.js"></script>
+
+    <script src="assets/js/dashboards-analytics.js"></script>
+  </body>
+</html>

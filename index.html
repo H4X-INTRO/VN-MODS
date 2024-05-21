@@ -1,0 +1,404 @@
+<html lang="en" class="light-style layout-navbar-fixed layout-menu-fixed" dir="ltr" data-theme="theme-default" data-assets-path="assets/" data-template="vertical-menu-template"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <title>Sign In | GeekWEB</title>
+
+    <meta name="description" content="">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="geekmods.ico">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+    <link href="./resources/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&amp;display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="./resources/css2?family=Outfit&amp;family=Rajdhani:wght@600&amp;family=Rubik:ital,wght@0,300..900;1,300..900&amp;display=swap" rel="stylesheet">
+    <!-- Icons -->
+    <link rel="stylesheet" href="./resources/fontawesome.css">
+    <link rel="stylesheet" href="./resources/tabler-icons.css">
+    <link rel="stylesheet" href="./resources/flag-icons.css">
+
+    <!-- Core CSS -->
+    <link rel="stylesheet" href="./resources/core.css" class="template-customizer-core-css">
+    <link rel="stylesheet" href="./resources/theme-default.css" class="template-customizer-theme-css">
+    <link rel="stylesheet" href="./resources/demo.css">
+
+    <!-- Vendors CSS -->
+   
+    <link rel="stylesheet" href="./resources/all.css">
+
+      <link rel="stylesheet" href="./resources/sharp-thin.css">
+
+      <link rel="stylesheet" href="./resources/sharp-solid.css">
+
+      <link rel="stylesheet" href="./resources/sharp-regular.css">
+
+      <link rel="stylesheet" href="./resources/sharp-light.css">
+
+    <link rel="stylesheet" href="./resources/spinkit.css">
+
+    <!-- Page CSS -->
+    <link rel="stylesheet" href="./resources/cards-advance.css">
+    <!-- Helpers -->
+    <script src="./resources/helpers.js"></script>
+<script src="./resources/jquery.min.js"></script>
+    <script src="./resources/customizer.js"></script>
+    <script src="./resources/config.js"></script>
+  </head>
+
+  <body style="font-family: Outfit, sans-serif;">
+   
+    
+<script>
+$(document).ready(function() {
+$('.btn-login').click(function(e){
+	e.preventDefault();
+	const divElement = document.querySelector('.modal-body-login');	
+	var login = $('#login').val();
+    if (login == '') {
+    divElement.innerHTML = '<i class="fas fa-circle-exclamation text-danger" style="margin-left:auto; margin-right:auto; font-size: 38px; "></i><div style="font-size: 16px; padding-top: 10px"><span class="text-danger">Please Enter Your Username</span></div>';
+    
+    return false;
+    }
+    var password = $('#password').val();
+    if (password == '') {
+    divElement.innerHTML = '<i class="fas fa-circle-exclamation text-danger" style="margin-left:auto; margin-right:auto; font-size: 38px; "></i><div style="font-size: 16px; padding-top: 10px"><span class="text-danger">Please Enter Your Password</span></div>';
+
+    return false;
+    }	
+	   $.ajax ({
+         type: "POST",
+	     url: "auth.g",
+         data: "login="+login+"&password="+password,
+	     beforeSend: function() {
+         divElement.innerHTML = '<div class="spinner-border text-success float-centet" role="status" style="height: 38px; width: 38px; font-size: 7px"></div><div style="font-size: 16px; padding-top: 10px"><span class="text-success">Signing In</span></div>';
+         
+	     },	
+	     success: function(response) {
+         var auth = JSON.parse(response);
+         if (auth.statusCode == 401) {
+           divElement.innerHTML = auth.res;
+         } else if (auth.statusCode == 403) {
+           divElement.innerHTML = auth.res;
+         } else if (auth.statusCode == 412) {
+           function hideLoginModal() {
+           $('#modal2').modal('hide');
+           }   
+           function openVerModal() {
+           $('#validation_modal').modal('show');
+           }    
+           setTimeout(hideLoginModal, 500);
+           setTimeout(openVerModal, 600);
+         } else if (auth.statusCode == 200) {
+           function redirect() {
+           window.location.href = "profile";
+           }
+           
+           divElement.innerHTML = auth.res;
+           setTimeout(redirect, 1000);  
+        }
+		},
+		error: function(err) {
+		   var er = err;
+		   divElement.innerHTML = '<i class="fas fa-wifi-exclamatiofa text-danger" style="margin-left:auto; margin-right:auto; font-size: 38px; "></i><div style="font-size: 16px; padding-top: 10px"><span class="text-danger">No Internet Connection</span></div>';
+		   $('#prb-container').html('<div class="progress-bar-value-warning">');
+		}            
+	});
+  });     
+});
+function validateCode() {
+var code = $('#verification_code').val();
+    if (code == '') {
+    $('#code_empty').show();
+    return false;
+    }
+    $.ajax ({
+        type: "POST",
+        url: "web.g",
+        data: "action=verify&code="+code,
+	    beforeSend: function() {
+	    $('#code_empty').hide();
+	    $('#code_incorrect').hide();
+        },	
+	    success: function(response) {
+        var auth = JSON.parse(response);
+        if (auth.statusCode == 200) {
+        function hideValidationModal() {
+           $('#validation_modal').modal('hide');
+        }   
+        const modal_body = document.querySelector('.modal-body-login');
+        modal_body.innerHTML = auth.res2;
+         
+        function redirect() {
+          window.location.href = "profile";
+        }    
+          function openLoginModal() {
+          $('#modal2').modal('show');
+          }  
+        setTimeout(openLoginModal, 600);
+        setTimeout(redirect, 1500);    
+        setTimeout(hideValidationModal, 500);
+        
+        } else if (auth.statusCode == 401) {
+        $('#code_incorrect').show();
+        }
+        }
+        
+    });
+    
+}
+
+</script>
+<style>
+.progress-bar {
+  height: 2px;
+  background-color: transparent;
+  border-top-left-radius: 50px;
+  border-top-right-radius: 50px;
+  width: 100%;
+  border: 0.0px solid #161618;
+  overflow: hidden;
+}
+.progress-bar-value-success {
+  height: 100%;
+  width: 100%;
+  background: linear-gradient(to right, #40826D, #98FB98);
+}
+.progress-bar-value-warning {
+  height: 100%;
+  width: 100%;
+  background: linear-gradient(to right, #ff9f43, #FFDF00);
+}
+.progress-bar-value-danger {
+  height: 100%;
+  width: 100%;
+  background: linear-gradient(to right, #D21F3C, #ea5455);
+}
+.progress-bar-value {
+  height: 100%;
+  width: 100%;
+  background: linear-gradient(to right, #40826D, #98FB98);
+  animation: indeterminateAnimation 1s infinite linear;
+  transform-origin: 0% 50%;
+}
+
+@keyframes indeterminateAnimation {
+  0% {
+    transform:  translateX(0) scaleX(0);
+  }
+  40% {
+    transform:  translateX(0) scaleX(0.4);
+  }
+  100% {
+    transform:  translateX(100%) scaleX(0.5);
+  }
+}
+</style>
+      
+       
+         <!-- Layout wrapper -->
+    <div class="layout-wrapper layout-content-navbar">
+      <div class="layout-container">
+        <!-- Menu -->
+
+        <!-- / Menu -->
+
+        <!-- Layout container -->
+        <div class="layout-page">
+          <!-- Navbar -->
+                    <nav class="layout-navbar container-xxl navbar navbar-expand-xl navbar-detached align-items-center justify-content-center bg-navbar-theme text-center" id="layout-navbar">
+<div class="text-center" style="height: auto; padding: 13px; border-top-left-radius: 5px; border-top-right-radius: 5px; font-size: 20px">   
+       <img src="./resources/geekmods.png" style="margin-bottom: 4.5px;" height="21" width="21">                      
+<b><font class="text-success">Geek<font class="text-muted">Web</font></font></b>
+           </div>    
+</nav>
+          <!-- / Navbar -->
+
+          <!-- Content wrapper -->
+          <div class="content-wrapper">
+            <!-- Content -->
+
+            <div class="container-xxl flex-grow-1 container-p-y">
+              <div class="row">
+                <!-- Content Removed for Brevity -->
+                  <div class="col-lg-3 col-sm-6 mb-3" style="">
+                
+                
+                
+                
+                
+                
+                
+
+
+          <div class="card">
+            <div class="card-body p-0">
+       
+                                                      
+
+                                
+                                <form class="auth-login-form" style="margin-left: 20px; margin-right: 20px; padding: 7px; margin-bottom: 20px; margin-top: 15px;" action="" method="POST">
+              
+                <div class="mb-0">
+                
+<div class="form-floating mt-2 mb-3" style="">
+          <input type="text" class="form-control" id="login" placeholder="" value="" aria-describedby="floatingInputHelp">
+          <label for="login">EMAIL OR USERNAME</label>
+</div>
+<div class="form-floating mt-2 mb-3" style="">
+          <input type="password" class="form-control" id="password" placeholder="" value="" aria-describedby="floatingInputHelp">
+          <label for="password">PASSWORD</label>
+</div>
+              <div style="margin-top: 10; margin-bottom: 18px"><a href="account_recovery" class="text-success" style=""></a></div><a href="account_recovery" class="text-success" style="">
+                                                <small style="font-size: 15px;">Forgot Password?</small>
+                                            </a>                         
+                  <div class="btn btn-success btn-login d-grid w-100" style="height: 40px; margin-top: 18px" data-bs-toggle="modal" data-bs-target="#modal2">Login</div>
+               
+    </div></form><hr style="padding: 0px; margin: 0px;">
+                                                     <div class="text-center p-3">Don't Have An Account? <a href="signup" class="text-success"><b>Sign Up</b></a></div>
+                  
+                  </div></div>
+   
+
+
+
+                
+              </div>
+            </div>
+            <!-- / Content -->
+
+
+            <div class="content-backdrop fade"></div>
+          </div>
+          <!-- Content wrapper -->
+        </div>
+        <!-- / Layout page -->
+      </div>
+
+      <!-- Overlay -->
+      <div class="layout-overlay layout-menu-toggle"></div>
+
+      <!-- Drag Target Area To SlideIn Menu On Small Screens -->
+      <div class="drag-target"></div>
+    </div>
+    <!-- / Layout wrapper -->
+
+
+           
+           
+           
+ <!-- Modal Start -->
+ <div class="modal fade" id="modal2" tabindex="-1" aria-labelledby="modalTitle" aria-hidden="true" data-backdrop="static">
+ <div class="modal-dialog modal-dialog-centered">
+ <div class="modal-content p-0" style="box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); ">
+ <div class="modal-header p-0" style="border-top-left-radius: 3px; border-top-right-radius: 3px; border-bottom-left-radius: 0px; border-bottom-right-radius: 0px;">
+
+  </div>  
+ <div id="modalBody" class="modal-body modal-body-login p-4 text-center" style="border-top-left-radius: 0px; border-top-right-radius: 0px; border-bottom-left-radius: 3px; border-bottom-right-radius: 3px; border-top: 0px solid #ea5455; ">
+ 
+ </div>
+ 
+ </div>
+ </div>
+ </div>
+ </div>
+<!-- Modal End-->
+
+
+
+ <!-- Validation Modal Start -->
+ <div class="modal fade" id="validation_modal" tabindex="-1" aria-labelledby="modalTitle" aria-hidden="true" data-backdrop="static">
+ <div class="modal-dialog modal-dialog-centered">
+<div class="modal-content p-0" style="box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); ">
+ <div class="modal-header p-0" style="border-top-left-radius: 3px; border-top-right-radius: 3px; border-bottom-left-radius: 0px; border-bottom-right-radius: 0px;">
+
+  </div>  
+ <div id="modalBody" class="modal-body p-4" style="">
+ 
+ 
+ <div class="bg-label-success p-3 text-center" style="margin-top: 0px; border-radius: 6px; font-size: 14px"><i class="fa-duotone fa-envelope-dot" style="font-size: 34px; margin-bottom: 8px"></i><br>
+We Have Sent An Verification Code To Your Your Email Address, Enter That Code Below To Proceed
+</div>
+
+  <div class="mt-3" style="margin-bottom: 18.5px;">                                      <div class="form-floating mt-2 mb-3" style="">
+          <input type="number" class="form-control" id="verification_code" placeholder="" value="" aria-describedby="floatingInputHelp">
+          <label for="verification_code">VERIFICATION CODE</label>
+                                            <div id="code_incorrect" class="text-danger" style="margin-top: 5px; display: none"><i class="fad fa-circle-exclamation"></i> Incorrect Verification Code </div>
+</div>
+
+                                    </div>
+                                    
+   <div class="d-flex justify-content-end">
+  <button type="button" onclick="validateCode();" class="btn btn-success w-50" style="">Proceed</button>
+</div>
+                 
+                                    
+
+ 
+ </div>
+ </div>
+ </div>
+ </div>
+ 
+<!-- Modal End-->
+
+
+           
+           
+           
+           
+           
+
+          
+        
+      
+    
+
+            
+          
+        
+      
+      
+    <!-- Core JS -->
+    <!-- build:js assets/vendor/js/core.js -->
+    <script src="./resources/jquery.js"></script>
+    <script src="./resources/popper.js"></script>
+    <script src="./resources/bootstrap.js"></script>
+    <script src="./resources/perfect-scrollbar.js"></script>
+    <script src="./resources/node-waves.js"></script>
+
+    <script src="./resources/hammer.js"></script>
+    <script src="./resources/i18n.js"></script>
+    <script src="./resources/typeahead.js"></script>
+
+    <script src="./resources/menu.js"></script>
+    <!-- endbuild -->
+
+    <!-- Vendors JS -->
+    <script src="./resources/apexcharts.js"></script>
+    <script src="./resources/swiper.js"></script>
+    <script src="./resources/datatables-bootstrap5.js"></script>
+
+    <!-- Main JS -->
+    <script src="./resources/main.js"></script>
+    <script>
+      function tutorial(link) {
+        document.location.href = link;
+      }
+      function demo(link) {
+        document.location.href = link;
+      }
+      function download(link) {
+        document.location.href = link;
+      }
+    </script>
+    <!-- Page JS -->
+    <script src="./resources/cards-actions.js"></script>
+
+    <script src="./resources/dashboards-analytics.js"></script>
+  
+
+</body></html>
